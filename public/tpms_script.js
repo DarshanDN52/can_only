@@ -20,6 +20,24 @@ const socket = typeof io !== 'undefined'
     : null;
 const backendEnabled = !!socket;
 
+// Get tire position name based on tire number and axle configuration
+function getTirePositionName(tireNum) {
+    let currentTire = 0;
+    for (let axleIndex = 0; axleIndex < axleConfig.length; axleIndex++) {
+        const tiresOnAxle = axleConfig[axleIndex];
+        for (let i = 0; i < tiresOnAxle; i++) {
+            currentTire++;
+            if (currentTire === tireNum) {
+                const axleName = axleIndex === 0 ? 'Front' : (axleIndex === axleConfig.length - 1 ? 'Rear' : `Axle ${axleIndex + 1}`);
+                const side = i < tiresOnAxle / 2 ? 'Left' : 'Right';
+                const position = tiresOnAxle > 2 ? (i % (tiresOnAxle / 2) === 0 ? ' Outer' : ' Inner') : '';
+                return `${axleName} ${side}${position}`;
+            }
+        }
+    }
+    return `Tire ${tireNum}`;
+}
+
 function initializeTireData() {
     tpmsData = {};
     dataHistory = { pressure: {}, temperature: {}, battery: {} };
@@ -57,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check for config in URL
     const urlParams = new URLSearchParams(window.location.search);
     const configParam = urlParams.get('config');
+    let autoStart = true; // Auto-start with dummy data by default
 
     if (configParam) {
         const axleStrings = configParam.split(',').filter(s => s.trim() !== '');
@@ -67,13 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (totalTires >= 2 && totalTires <= 16) {
                 axleConfig = newAxleConfig;
                 tireCount = totalTires;
-                
-                // Hide the modal and start collection
-                const modal = document.getElementById('tire-count-modal');
-                if(modal) modal.style.display = 'none';
-
-                // Defer start to ensure everything is rendered
-                setTimeout(startTPMSCollection, 100);
             }
         }
     }
@@ -85,9 +97,44 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeTireDetailChart();
     setupSocketListeners();
 
-    // Ensure the main chart displays the default metric (Pressure) correctly on load
-    updateChart('pressure');
+    // Auto-start with dummy data for testing
+    if (autoStart) {
+        // Hide the modal since we're auto-starting
+        const modal = document.getElementById('tire-count-modal');
+        if(modal) modal.style.display = 'none';
+        
+        // Defer start to ensure everything is rendered
+        setTimeout(() => {
+            startTPMSCollection();
+            // Generate some initial historical data for charts
+            generateInitialDummyData();
+        }, 100);
+    }
 });
+
+// Generate initial dummy historical data for charts
+function generateInitialDummyData() {
+    const now = new Date();
+    
+    // Generate 20 historical data points for each tire
+    for (let point = 0; point < 20; point++) {
+        const timeLabel = new Date(now.getTime() - (20 - point) * 2000).toLocaleTimeString();
+        
+        for (let i = 1; i <= tireCount; i++) {
+            const basePressure = 35 + (i % 3) * 5;
+            const baseTemp = 20 + (i % 2) * 5;
+            const baseBattery = 60 + (i % 4) * 5;
+            
+            addToHistory('pressure', i, basePressure + (Math.random() - 0.5) * 8, timeLabel);
+            addToHistory('temperature', i, baseTemp + (Math.random() - 0.5) * 10, timeLabel);
+            addToHistory('battery', i, Math.max(0, Math.min(100, baseBattery + (Math.random() - 0.5) * 20)), timeLabel);
+        }
+    }
+    
+    // Update the chart with the generated data
+    const graphType = document.getElementById('graph-type').value;
+    updateChart(graphType);
+}
 
 // Modal handling
 function initializeModal() {
