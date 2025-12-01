@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAN Configuration Console</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="page-header">
+            <h1>PCAN Configuration Console</h1>
+            <button id="tpms-button" class="primary tpms-button">TPMS Data</button>
+        </header>
+
+        <main class="grid">
+            <section class="card" id="connection-card">
+                <header>
+                    <h2>Connection</h2>
+                    <span id="connection-pill" class="pill pill--danger">Disconnected</span>
+                </header>
+                <form id="connection-form">
+                    <label class="field">
+                        <span>Hardware channel</span>
+                        <select id="channel"></select>
+                    </label>
+                    <label class="field">
+                        <span>Baudrate preset</span>
+                        <select id="baudrate"></select>
+                    </label>
+                    <div class="button-row">
+                        <button type="button" id="initialize-pcan" class="primary">Initialize</button>
+                        <button type="button" id="release-pcan" class="ghost" disabled>Release</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card" id="write-card">
+                <header>
+                    <h2>Write Message</h2>
+                </header>
+                <form id="write-form">
+                    <div class="field-grid">
+                        <label class="field">
+                            <span>Identifier (hex)</span>
+                            <input type="text" id="write-id" value="100" maxlength="8">
+                        </label>
+                        <label class="field">
+                            <span>DLC</span>
+                            <input type="number" id="write-dlc" value="8" min="0" max="64">
+                        </label>
+                    </div>
+                    <label class="field">
+                        <span>Payload bytes</span>
+                        <div id="byte-grid" class="byte-grid"></div>
+                        <p class="hint"></p>
+                    </label>
+                    <div class="button-row">
+                        <button type="submit" id="write-message" class="primary" disabled>Send frame</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card" id="read-card">
+                <header>
+                    <h2>Read Message</h2>
+                    <div class="button-row">
+                        <button type="button" id="poll-now" class="ghost" disabled>Poll once</button>
+                        <button type="button" id="clear-messages" class="ghost" disabled>Clear</button>
+                    </div>
+                </header>
+                <div class="table-wrapper">
+                    <table id="messages-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Count</th>
+                                <th>Length</th>
+                                <th>Cycle Time (ms)</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messages-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card" id="info-card">
+                <header>
+                    <h2>Connection log</h2>
+                    <button type="button" id="clear-log" class="ghost">Clear log</button>
+                </header>
+                <ul id="log-list"></ul>
+            </section>
+        </main>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

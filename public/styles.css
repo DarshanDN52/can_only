@@ -1,0 +1,253 @@
+/* Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #05060a;
+    --card-bg: #111423;
+    --card-border: #1f2235;
+    --accent: #5cc8ff;
+    --accent-strong: #2cb1ff;
+    --danger: #ff5c6a;
+    --success: #29d98c;
+    --text: #f2f5ff;
+    --muted: #9ba3c7;
+    --mono: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at 10% 20%, rgba(92, 200, 255, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 0, rgba(255, 92, 106, 0.12), transparent 45%),
+                var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+}
+
+.app-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 2.4rem;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.tpms-button {
+    min-width: 160px;
+}
+
+.grid {
+    display: grid;
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.card h2 {
+    font-size: 1.4rem;
+}
+
+.pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pill--danger {
+    background: rgba(255, 92, 106, 0.2);
+    color: var(--danger);
+}
+
+.pill--success {
+    background: rgba(41, 217, 140, 0.2);
+    color: var(--success);
+}
+
+form,
+.field,
+.field-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.field span {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+input,
+select,
+textarea {
+    background: #080b16;
+    border: 1px solid #1c2133;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    color: var(--text);
+    transition: border 0.2s ease, transform 0.1s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #02111c;
+}
+
+.ghost {
+    background: transparent;
+    border: 1px solid #1f2740;
+    color: var(--muted);
+}
+
+.primary:not(:disabled):hover,
+.ghost:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+
+.table-wrapper {
+    border: 1px solid #1f2235;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    font-family: var(--mono);
+}
+
+thead {
+    background: #161a29;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1c2033;
+    text-align: left;
+}
+
+tbody tr:hover {
+    background: rgba(92, 200, 255, 0.05);
+}
+
+#log-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    background: #080b16;
+    border-left: 3px solid var(--accent);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.log-entry--error {
+    border-color: var(--danger);
+}
+
+.log-entry--success {
+    border-color: var(--success);
+}
+
+.byte-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+    gap: 8px;
+}
+
+.byte-grid input {
+    text-align: center;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+@media (min-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .button-row {
+        flex-direction: column;
+    }
+    }
+

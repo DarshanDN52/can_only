@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPMS Dashboard</title>
+    <link rel="stylesheet" href="tpms_style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <div class="tpms-container">
+        <header class="tpms-header">
+            <h1>🚛 TPMS Dashboard</h1>
+            <div class="header-controls">
+                <button id="start-tpms" class="btn-primary">Start Data Collection</button>
+                <button id="stop-tpms" class="btn-secondary" disabled>Stop Collection</button>
+                <button id="back-to-main" class="btn-secondary">← Back to Main</button>
+            </div>
+        </header>
+
+        <!-- Truck 2D Top View with Tire Positions -->
+        <div class="truck-view-section">
+            <div class="view-selector-header">
+                <!-- <h2>📊 Data View</h2> -->
+                <div class="view-toggle">
+                    <button id="top-view-btn" class="view-btn active">Top View</button>
+                    <button id="data-view-btn" class="view-btn">Data View</button>
+                </div>
+            </div>
+            <div class="truck-container-wrapper" id="truck-container-wrapper">
+                <div class="truck-2d-view" id="truck-view">
+                    <!-- Axle groups will be added here by JS -->
+                    <div class="truck-body-container">
+                        <div class="truck-body">
+                            <div class="truck-cab"></div>
+                            <div class="truck-trailer"></div>
+                            <div class="truck-windshield"></div>
+                        </div>
+                    </div>
+                    <!-- Tires will be dynamically positioned here -->
+                </div>
+            </div>
+            <div class="data-view-container" id="data-view-container" style="display: none;">
+                <!-- Tire data boxes will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Graph Section with Dropdown -->
+        <div class="graph-section">
+            <div class="graph-header">
+                <h2>📈 Data Visualization</h2>
+                <div class="graph-selector">
+                    <label for="graph-type">Select Metric:</label>
+                    <select id="graph-type" class="graph-dropdown">
+                        <option value="pressure">📊 Pressure (PSI)</option>
+                        <option value="temperature">🌡️ Temperature (°C)</option>
+                        <option value="battery">🔋 Battery Level (%)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="main-chart-zoom-in" title="Zoom In">🔍+</button>
+                <button class="zoom-btn" id="main-chart-zoom-out" title="Zoom Out">🔍-</button>
+                <button class="zoom-btn" id="main-chart-zoom-reset" title="Reset Zoom">↺ Reset</button>
+                <span class="zoom-hint">💡 Drag to pan, Scroll to zoom</span>
+            </div>
+            <div class="graph-container">
+                <canvas id="tpms-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="table-section">
+            <h2>📋 Tire Data Table</h2>
+            <div class="table-wrapper">
+                <table id="tpms-table">
+                    <thead>
+                        <tr>
+                            <th>Tire #</th>
+                            <th>Position</th>
+                            <th>Pressure (PSI)</th>
+                            <th>Temperature (°C)</th>
+                            <th>Battery (%)</th>
+                            <th>Last Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tpms-table-body">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for tire count input -->
+    <div id="tire-count-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>⚙️ Configure TPMS</h2>
+            <p>Enter tire configuration per axle (e.g., 2,4 for a 6-wheel truck):</p>
+            <input type="text" id="tire-config-input" value="2,4" class="tire-input">
+            <p class="modal-hint">Enter the number of tires for each axle, separated by commas. Example: '2,4' for a truck with 2 tires on the front axle and 4 on the rear axle.</p>
+            <div class="modal-buttons">
+                <button id="confirm-tire-count" class="btn-primary">Start Monitoring</button>
+                <button id="cancel-tire-count" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for individual tire details -->
+    <div id="tire-detail-modal" class="modal">
+        <div class="modal-content tire-detail-modal-content">
+            <span class="close-tire-detail">&times;</span>
+            <h2 id="tire-detail-title">🚛 Tire Details</h2>
+            
+            <!-- Live Data Cards -->
+            <div class="tire-detail-cards">
+                <div class="data-card pressure-card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-label">Pressure</div>
+                    <div class="card-value" id="detail-pressure">0.0</div>
+                    <div class="card-unit">PSI</div>
+                </div>
+                <div class="data-card temperature-card">
+                    <div class="card-icon">🌡️</div>
+                    <div class="card-label">Temperature</div>
+                    <div class="card-value" id="detail-temperature">0.0</div>
+                    <div class="card-unit">°C</div>
+                </div>
+                <div class="data-card battery-card">
+                    <div class="card-icon">🔋</div>
+                    <div class="card-label">Battery</div>
+                    <div class="card-value" id="detail-battery">0</div>
+                    <div class="card-unit">%</div>
+                </div>
+            </div>
+
+            <!-- Individual Tire Graph -->
+            <div class="tire-detail-graph-section">
+                <div class="graph-controls-header">
+                    <h3>📈 Live Data Graph</h3>
+                    <div class="view-selector">
+                        <button class="arrow-btn" id="prev-view" title="Previous View">◀</button>
+                        <select id="tire-detail-view-selector" class="view-selector-dropdown">
+                            <option value="pressure">Pressure</option>
+                            <option value="temperature">Temperature</option>
+                            <option value="battery">Battery</option>
+                        </select>
+                        <button class="arrow-btn" id="next-view" title="Next View">▶</button>
+                    </div>
+                </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoom-in" title="Zoom In">🔍+</button>
+                    <button class="zoom-btn" id="zoom-out" title="Zoom Out">🔍-</button>
+                    <button class="zoom-btn" id="zoom-reset" title="Reset Zoom">↺ Reset</button>
+                    <span class="zoom-hint">💡 Drag to pan, Scroll to zoom</span>
+                </div>
+                <div class="tire-detail-graph-container">
+                    <canvas id="tire-detail-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="tpms_script.js"></script>
+</body>
+</html>
