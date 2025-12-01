@@ -4,27 +4,44 @@
     box-sizing: border-box;
 }
 
+:root {
+    --bg: #05060a;
+    --card-bg: #111423;
+    --card-border: #1f2235;
+    --accent: #5cc8ff;
+    --accent-strong: #2cb1ff;
+    --danger: #ff5c6a;
+    --success: #29d98c;
+    --warning: #ff9800;
+    --text: #f2f5ff;
+    --muted: #9ba3c7;
+    --mono: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #1e1e1e;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at 10% 20%, rgba(92, 200, 255, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 0, rgba(255, 92, 106, 0.12), transparent 45%),
+                var(--bg);
     min-height: 100vh;
     padding: 20px;
-    color: #2c3e50;
+    color: var(--text);
 }
 
 .tpms-container {
     max-width: 1400px;
     margin: 0 auto;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
     overflow: hidden;
 }
 
-/* Header Styles */
 .tpms-header {
-    background: #252526;
-    color: white;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    color: var(--text);
     padding: 30px;
     display: flex;
     justify-content: space-between;
@@ -34,9 +51,10 @@ body {
 }
 
 .tpms-header h1 {
-    font-size: 2.5em;
+    font-size: 2.4rem;
     font-weight: bold;
     margin: 0;
+    letter-spacing: 0.04em;
 }
 
 .header-controls {
@@ -48,66 +66,60 @@ body {
 .btn-primary, .btn-secondary {
     padding: 12px 24px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary {
-    background: #4CAF50;
-    color: white;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #02111c;
     border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: #45a049;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(92, 200, 255, 0.3);
 }
 
 .btn-primary:disabled {
-    background: #cccccc;
-    color: #666666;
+    opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
 }
 
 .btn-secondary {
-    background: #f44336;
-    color: white;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--muted);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #da190b;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    color: var(--text);
 }
 
 .btn-secondary:disabled {
-    background: #cccccc;
-    color: #666666;
+    opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
 }
 
-/* Truck View Section */
 .truck-view-section {
     padding: 40px;
-    background: #1e1e1e;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--card-border);
 }
 
 .truck-view-section h2 {
     text-align: center;
     margin-bottom: 30px;
     font-size: 2em;
-    color: #333;
+    color: var(--text);
 }
 
 .view-selector-header {
@@ -120,23 +132,30 @@ body {
 
 .view-toggle {
     display: flex;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--card-border);
 }
 
 .view-btn {
     padding: 10px 20px;
     border: none;
-    background-color: #f0f0f0;
+    background-color: var(--card-bg);
+    color: var(--muted);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
     font-size: 16px;
+    font-weight: 600;
 }
 
 .view-btn.active {
-    background-color: #667eea;
-    color: white;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #02111c;
+}
+
+.view-btn:hover:not(.active) {
+    background-color: #1a1d2e;
+    color: var(--text);
 }
 
 .data-view-container {
@@ -144,40 +163,40 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     padding: 20px;
-    background: #f8f9fa;
+    background: var(--bg);
     border-radius: 12px;
 }
 
 .data-box {
-    background: white;
-    border-radius: 10px;
+    background: var(--card-bg);
+    border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid var(--card-border);
     border-left: 5px solid;
     transition: all 0.3s ease;
 }
 
 .data-box:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .data-box.normal {
-    border-color: #4CAF50;
+    border-left-color: var(--success);
 }
 
 .data-box.warning {
-    border-color: #ff9800;
+    border-left-color: var(--warning);
 }
 
 .data-box.critical {
-    border-color: #f44336;
+    border-left-color: var(--danger);
 }
 
 .data-box h3 {
     margin-bottom: 15px;
     font-size: 1.2em;
-    color: #333;
+    color: var(--text);
 }
 
 .data-box .details {
@@ -190,62 +209,35 @@ body {
     display: flex;
     justify-content: space-between;
     font-size: 1em;
+    color: var(--muted);
 }
 
+.data-box .detail-item span:last-child {
+    color: var(--text);
+    font-weight: 600;
+}
 
 .truck-container-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 40px;
-    background: rgb(2, 17, 33);
+    background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--card-border);
 }
 
 .truck-2d-view {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  height: 400px;
-  margin: 0 auto;
-  background: linear-gradient(to bottom, #3a3d41 0%, #2a2d31 100%);
-  border-radius: 12px;
-  border: 2px solid #555;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 400px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, #1a1d2e 0%, #111423 100%);
+    border-radius: 12px;
+    border: 2px solid var(--card-border);
+    overflow: hidden;
 }
-
-
-/* Road markings */
-/* .truck-2d-view::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: repeating-linear-gradient(
-        to right,
-        #ffd700 0px,
-        #ffd700 30px,
-        transparent 30px,
-        transparent 60px
-    );
-    transform: translateY(-50%);
-    z-index: 1;
-}
-
-.truck-2d-view::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    background: #ffd700;
-    transform: translateX(-50%);
-    z-index: 1;
-} */
 
 .truck-body {
     position: absolute;
@@ -258,8 +250,8 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.2);
+        inset 0 2px 4px rgba(255, 255, 255, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .truck-cab {
@@ -277,21 +269,6 @@ body {
     position: relative;
 }
 
-/* .truck-windshield {
-    position: absolute;
-    top: 18%;
-    left: 4%;
-    width: 20%;
-    height: 28%;
-    background: linear-gradient(135deg, #5dade2 0%, #3498db 100%);
-    border-radius: 4px;
-    box-shadow: 
-        inset 0 1px 3px rgba(0, 0, 0, 0.2),
-        0 0 8px rgba(93, 173, 226, 0.3);
-    z-index: 5;
-} */
-
-/* Add detail lines to truck */
 .truck-cab::before {
     content: '';
     position: absolute;
@@ -346,14 +323,13 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 
-        0 3px 10px rgba(0, 0, 0, 0.2),
+        0 3px 10px rgba(0, 0, 0, 0.3),
         inset 0 2px 4px rgba(255, 255, 255, 0.2);
     z-index: 10;
     padding: 8px;
-    overflow: hidden; /* To contain the pseudo-elements */
+    overflow: hidden;
 }
 
-/* Tire rim effect */
 .tire::before {
     content: '';
     position: absolute;
@@ -367,17 +343,16 @@ body {
 
 .tire:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
     z-index: 20;
 }
 
 .tire.normal {
-    /* Uses the default .tire style for a realistic look */
-    border-color: #1c1c1c;
+    border-color: var(--success);
 }
 
 .tire.warning {
-    border-color: #ff9800;
+    border-color: var(--warning);
     background-image: 
         repeating-linear-gradient(
             0deg,
@@ -388,14 +363,14 @@ body {
         ),
         radial-gradient(circle at 30% 30%, #ffe0b2, #ff9800);
     box-shadow: 
-        0 3px 10px rgba(0, 0, 0, 0.2),
+        0 3px 10px rgba(0, 0, 0, 0.3),
         0 0 15px rgba(255, 152, 0, 0.5),
         inset 0 2px 4px rgba(255, 255, 255, 0.3);
     animation: pulse-warning 2s infinite;
 }
 
 .tire.critical {
-    border-color: #f44336;
+    border-color: var(--danger);
     background-image: 
         repeating-linear-gradient(
             0deg,
@@ -406,7 +381,7 @@ body {
         ),
         radial-gradient(circle at 30% 30%, #ffcdd2, #f44336);
     box-shadow: 
-        0 3px 10px rgba(0, 0, 0, 0.2),
+        0 3px 10px rgba(0, 0, 0, 0.3),
         0 0 20px rgba(244, 67, 54, 0.6),
         inset 0 2px 4px rgba(255, 255, 255, 0.3);
     animation: pulse-critical 1s infinite;
@@ -459,11 +434,10 @@ body {
     opacity: 0.8;
 }
 
-/* Graph Section */
 .graph-section {
     padding: 40px;
-    background:#252526;;
-    border-bottom: 1px solid #e0e0e0;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
 }
 
 .graph-header {
@@ -476,8 +450,8 @@ body {
 }
 
 .graph-header h2 {
-    font-size: 2em;
-    color: #fefefe;
+    font-size: 1.8em;
+    color: var(--text);
 }
 
 .graph-selector {
@@ -488,104 +462,102 @@ body {
 
 .graph-selector label {
     font-weight: bold;
-    color: #495057;
+    color: var(--muted);
     font-size: 16px;
 }
 
 .graph-dropdown {
     padding: 12px 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
     font-size: 16px;
-    background: #ffffff;
-    color: #333;
+    background: #080b16;
+    color: var(--text);
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 250px;
 }
 
 .graph-dropdown:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent);
 }
 
 .graph-dropdown:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(92, 200, 255, 0.2);
 }
 
 .graph-container {
     position: relative;
     height: 400px;
-    background: #2c3e50;
+    background: #080b16;
     border-radius: 12px;
     padding: 20px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--card-border);
 }
 
-/* Table Section */
 .table-section {
     padding: 40px;
-    background: #f8f9fa;
+    background: var(--bg);
 }
 
 .table-section h2 {
     text-align: center;
     margin-bottom: 30px;
-    font-size: 2em;
-    color: #ebebeb;
+    font-size: 1.8em;
+    color: var(--text);
 }
 
 .table-wrapper {
     overflow-x: auto;
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--card-border);
+    padding: 0;
 }
 
 #tpms-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
+    font-family: var(--mono);
 }
 
 #tpms-table thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #02111c;
 }
 
 #tpms-table th {
     padding: 15px;
     text-align: left;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 #tpms-table tbody tr {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--card-border);
     transition: all 0.2s ease;
 }
 
 #tpms-table tbody tr:hover {
-    background-color: #f5f5f5;
+    background-color: rgba(92, 200, 255, 0.05);
 }
 
 #tpms-table tbody tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 #tpms-table tbody tr:nth-child(even):hover {
-    background-color: #f0f0f0;
+    background-color: rgba(92, 200, 255, 0.08);
 }
 
 #tpms-table td {
     padding: 15px;
-    color: #333;
+    color: var(--text);
 }
 
 .status-badge {
@@ -599,21 +571,18 @@ body {
 }
 
 .status-badge.normal {
-    background: #4CAF50;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgba(41, 217, 140, 0.2);
+    color: var(--success);
 }
 
 .status-badge.warning {
-    background: #ff9800;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--warning);
 }
 
 .status-badge.critical {
-    background: #f44336;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 92, 106, 0.2);
+    color: var(--danger);
     animation: blink 1s infinite;
 }
 
@@ -622,7 +591,6 @@ body {
     50% { opacity: 0.7; }
 }
 
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -631,7 +599,7 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease;
 }
@@ -642,16 +610,17 @@ body {
 }
 
 .modal-content {
-    background: white;
+    background: var(--card-bg);
     margin: 15% auto;
     padding: 40px;
-    border-radius: 12px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
     animation: slideDown 0.3s ease;
     position: relative;
-    color: #333;
+    color: var(--text);
 }
 
 @keyframes slideDown {
@@ -671,31 +640,31 @@ body {
     top: 20px;
     font-size: 32px;
     font-weight: bold;
-    color: #999;
+    color: var(--muted);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .close:hover {
-    color: #333;
+    color: var(--text);
     transform: scale(1.1);
 }
 
 .modal-content h2 {
     margin-bottom: 20px;
-    color: #495057;
+    color: var(--text);
     font-size: 1.8em;
 }
 
 .modal-content p {
     margin-bottom: 15px;
-    color: #666;
+    color: var(--muted);
     font-size: 16px;
 }
 
 .modal-hint {
     font-size: 14px !important;
-    color: #999 !important;
+    color: var(--muted) !important;
     font-style: italic;
     margin-top: 10px !important;
 }
@@ -703,20 +672,20 @@ body {
 .tire-input {
     width: 100%;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
     font-size: 18px;
     margin: 20px 0;
     text-align: center;
     transition: all 0.3s ease;
-    background: white;
-    color: #333;
+    background: #080b16;
+    color: var(--text);
 }
 
 .tire-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(92, 200, 255, 0.2);
 }
 
 .modal-buttons {
@@ -731,7 +700,6 @@ body {
     max-width: 200px;
 }
 
-/* Tire Detail Modal Styles */
 .tire-detail-modal-content {
     max-width: 1000px !important;
     max-height: 95vh;
@@ -739,9 +707,10 @@ body {
     margin: 5% auto !important;
     padding: 30px 40px !important;
     width: 95% !important;
-    background: white !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-    color: #333;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5) !important;
+    color: var(--text);
 }
 
 .tire-detail-cards {
@@ -752,36 +721,34 @@ body {
 }
 
 .data-card {
-    background: white;
+    background: #080b16;
     border-radius: 12px;
     padding: 25px;
     text-align: center;
-    color: #333;
-    border: 2px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    color: var(--text);
+    border: 2px solid var(--card-border);
     transition: all 0.3s ease;
 }
 
 .data-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .pressure-card {
-    border-color: #4CAF50;
-    background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+    border-color: var(--success);
+    background: linear-gradient(135deg, rgba(41, 217, 140, 0.1) 0%, #080b16 100%);
 }
 
 .temperature-card {
-    border-color: #ff9800;
-    background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
+    border-color: var(--warning);
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, #080b16 100%);
 }
 
 .battery-card {
-    border-color: #2196F3;
-    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(92, 200, 255, 0.1) 0%, #080b16 100%);
 }
-
 
 .card-icon {
     font-size: 40px;
@@ -790,7 +757,7 @@ body {
 
 .card-label {
     font-size: 14px;
-    opacity: 0.9;
+    color: var(--muted);
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -800,17 +767,18 @@ body {
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: var(--text);
 }
 
 .card-unit {
     font-size: 14px;
-    opacity: 0.8;
+    color: var(--muted);
 }
 
 .tire-detail-graph-section {
     margin-top: 30px;
     padding-top: 30px;
-    border-top: 2px solid #e0e0e0;
+    border-top: 2px solid var(--card-border);
 }
 
 .graph-controls-header {
@@ -824,7 +792,7 @@ body {
 
 .tire-detail-graph-section h3 {
     margin: 0;
-    color: #333;
+    color: var(--text);
     font-size: 1.5em;
 }
 
@@ -835,9 +803,9 @@ body {
 }
 
 .arrow-btn {
-    background: white;
-    color: #667eea;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    color: var(--accent);
+    border: 1px solid var(--card-border);
     border-radius: 8px;
     width: 40px;
     height: 40px;
@@ -847,18 +815,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .arrow-btn:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.arrow-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background: var(--accent);
+    color: #02111c;
+    border-color: var(--accent);
+    transform: scale(1.05);
 }
 
 .arrow-btn:active {
@@ -867,25 +830,24 @@ body {
 
 .view-selector-dropdown {
     padding: 10px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--card-border);
     border-radius: 8px;
     font-size: 14px;
-    background: white;
-    color: #333;
+    background: #080b16;
+    color: var(--text);
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 180px;
 }
 
 .view-selector-dropdown:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent);
 }
 
 .view-selector-dropdown:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(92, 200, 255, 0.2);
 }
 
 .zoom-controls {
@@ -897,27 +859,22 @@ body {
 }
 
 .zoom-btn {
-    background: white;
-    color: #667eea;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    color: var(--accent);
+    border: 1px solid var(--card-border);
     border-radius: 8px;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .zoom-btn:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.zoom-btn:hover {
+    background: var(--accent);
+    color: #02111c;
+    border-color: var(--accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .zoom-btn:active {
@@ -927,17 +884,17 @@ body {
 .zoom-hint {
     margin-left: auto;
     font-size: 12px;
-    color: #999;
+    color: var(--muted);
     font-style: italic;
 }
 
 .tire-detail-graph-container {
     position: relative;
     height: 450px;
-    background: #f8f9fa;
+    background: #080b16;
     border-radius: 12px;
     padding: 20px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--card-border);
     margin-bottom: 15px;
 }
 
@@ -954,7 +911,7 @@ body {
     align-items: center;
     gap: 10px;
     font-size: 14px;
-    color: #333;
+    color: var(--text);
 }
 
 .legend-color {
@@ -970,18 +927,17 @@ body {
     top: 20px;
     font-size: 32px;
     font-weight: bold;
-    color: #999;
+    color: var(--muted);
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 10;
 }
 
 .close-tire-detail:hover {
-    color: #333;
+    color: var(--text);
     transform: scale(1.1);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .tpms-header {
         flex-direction: column;
@@ -998,65 +954,66 @@ body {
 
     .tire {
         width: 80px;
-        height: 80px;
+        height: 50px;
     }
 
     .tire-label {
-        font-size: 11px;
+        font-size: 12px;
+        padding: 5px 6px;
+    }
+
+    .tire-value {
+        font-size: 9px;
+    }
+
+    .tire-detail-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .graph-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .graph-selector {
+        width: 100%;
+    }
+
+    .graph-dropdown {
+        width: 100%;
+    }
+
+    .table-section, .graph-section, .truck-view-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tire {
+        width: 60px;
+        height: 40px;
+    }
+
+    .tire-label {
+        font-size: 10px;
+        padding: 4px 5px;
     }
 
     .tire-value {
         font-size: 8px;
     }
-    
-    .tire-value .metric-label {
-        font-size: 7px;
+
+    .btn-primary, .btn-secondary {
+        padding: 10px 16px;
+        font-size: 14px;
     }
 
-    .graph-container {
-        height: 300px;
-    }
-
-    .table-wrapper {
-        overflow-x: scroll;
-    }
-
-    #tpms-table {
-        font-size: 12px;
-    }
-
-    #tpms-table th,
-    #tpms-table td {
-        padding: 10px 8px;
-    }
-    
-    .tire-detail-modal-content {
-        width: 98% !important;
-        max-width: 98% !important;
-        margin: 2% auto !important;
-        padding: 20px !important;
-    }
-    
-    .tire-detail-cards {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .tire-detail-graph-container {
-        height: 300px;
-    }
-    
-    .graph-controls-header {
+    .zoom-controls {
         flex-direction: column;
         align-items: flex-start;
     }
-    
-    .zoom-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
+
     .zoom-hint {
-        display: none;
+        margin-left: 0;
     }
 }
