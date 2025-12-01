@@ -344,12 +344,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (message.parsed) {
             const p = message.parsed;
-            const batteryMW = (p.battery_watts * 1000).toFixed(0);
-            dataDisplay = `Sensor ${p.sensor_id} | Pressure: ${p.pressure} | Temp: ${p.temperature}°C | Battery: ${batteryMW} mW`;
+            dataDisplay = `Sensor ${p.sensor_id} | Pressure: ${p.pressure} | Temp: ${p.temperature}°C | Battery: ${p.battery_watts} W`;
             parsedInfo = {
                 sensor_id: p.sensor_id,
                 temperature: p.temperature,
-                battery_mw: batteryMW,
+                battery_watts: p.battery_watts,
                 pressure: p.pressure
             };
         } else {
