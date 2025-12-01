@@ -18,6 +18,11 @@
     --text: #f2f5ff;
     --muted: #9ba3c7;
     --mono: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    --bg-dark: #05060a;
+    --bg-input: #080b16;
+    --border-color: #1c2133;
+    --text-primary: #f2f5ff;
+    --text-secondary: #9ba3c7;
     font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -128,49 +133,56 @@ select:focus,
 textarea:focus {
     border-color: var(--accent);
     outline: none;
-    transform: translateY(-1px);
 }
 
 .button-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 button {
-    border: none;
-    border-radius: 12px;
     padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.2s ease;
+    transition: all 0.2s ease;
 }
 
-button:disabled {
+.primary {
+    background: var(--accent);
+    color: #000;
+}
+
+.primary:hover {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+}
+
+.primary:active {
+    transform: translateY(0);
+}
+
+.primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-    color: #02111c;
-}
-
 .ghost {
     background: transparent;
-    border: 1px solid #1f2740;
+    border: 1px solid var(--muted);
     color: var(--muted);
 }
 
-.primary:not(:disabled):hover,
-.ghost:not(:disabled):hover {
-    transform: translateY(-2px);
+.ghost:hover {
+    color: var(--text);
+    border-color: var(--text);
 }
 
 .table-wrapper {
-    border: 1px solid #1f2235;
-    border-radius: 12px;
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 .table-scroll {
@@ -178,88 +190,166 @@ button:disabled {
     overflow-y: auto;
 }
 
-.table-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-
-.table-scroll::-webkit-scrollbar-track {
-    background: var(--card-bg);
-    border-radius: 4px;
-}
-
-.table-scroll::-webkit-scrollbar-thumb {
-    background: var(--card-border);
-    border-radius: 4px;
-}
-
-.table-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.92rem;
-    font-family: var(--mono);
+    font-size: 0.9rem;
 }
 
 thead {
-    background: #161a29;
+    position: sticky;
+    top: 0;
 }
 
-th,
-td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #1c2033;
+th {
+    background: rgba(92, 200, 255, 0.1);
+    padding: 10px;
     text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--card-border);
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(92, 200, 255, 0.05);
 }
 
 tbody tr:hover {
     background: rgba(92, 200, 255, 0.05);
 }
 
-#log-list {
+ul {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 220px;
-    overflow-y: auto;
 }
 
-.log-entry {
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    background: #080b16;
+li {
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
     border-left: 3px solid var(--accent);
-    padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    word-break: break-all;
 }
 
-.log-entry--error {
-    border-color: var(--danger);
-}
-
-.log-entry--success {
-    border-color: var(--success);
-}
-
+/* Byte grid for CAN write */
 .byte-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 8px;
 }
 
 .byte-grid input {
     text-align: center;
-    text-transform: uppercase;
     font-family: var(--mono);
+    font-size: 0.9rem;
     letter-spacing: 0.05em;
 }
 
 .hint {
     font-size: 0.8rem;
     color: var(--muted);
+}
+
+/* TPMS Configuration Modal */
+.tpms-config-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.tpms-config-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tpms-config-modal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.tpms-config-modal .modal-box {
+    position: relative;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.tpms-config-modal h2 {
+    margin-top: 0;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.tpms-config-modal p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.tpms-config-modal .field {
+    margin-bottom: 1.5rem;
+}
+
+.tpms-config-modal .field span {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.tpms-config-modal .field input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.tpms-config-modal .field input:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.tpms-config-modal .hint {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.tpms-config-modal .error-message {
+    color: #f44336;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.tpms-config-modal .button-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.tpms-config-modal .button-row button {
+    flex: 1;
 }
 
 @media (min-width: 900px) {
@@ -272,5 +362,4 @@ tbody tr:hover {
     .button-row {
         flex-direction: column;
     }
-    }
-
+}

@@ -13,8 +13,6 @@
         <header class="tpms-header">
             <h1>🚛 TPMS Dashboard</h1>
             <div class="header-controls">
-                <button id="start-tpms" class="btn-primary">Start Data Collection</button>
-                <button id="stop-tpms" class="btn-secondary" disabled>Stop Collection</button>
                 <button id="back-to-main" class="btn-secondary">← Back to Main</button>
             </div>
         </header>
@@ -93,20 +91,6 @@
         </div>
     </div>
 
-    <!-- Modal for tire count input -->
-    <div id="tire-count-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>⚙️ Configure TPMS</h2>
-            <p>Enter tire configuration per axle (e.g., 2,4 for a 6-wheel truck):</p>
-            <input type="text" id="tire-config-input" value="2,4" class="tire-input">
-            <p class="modal-hint">Enter the number of tires for each axle, separated by commas. Example: '2,4' for a truck with 2 tires on the front axle and 4 on the rear axle.</p>
-            <div class="modal-buttons">
-                <button id="confirm-tire-count" class="btn-primary">Start Monitoring</button>
-                <button id="cancel-tire-count" class="btn-secondary">Cancel</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Modal for individual tire details -->
     <div id="tire-detail-modal" class="modal">

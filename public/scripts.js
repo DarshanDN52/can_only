@@ -56,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const logList = document.getElementById('log-list');
     const clearLogBtn = document.getElementById('clear-log');
     const tpmsButton = document.getElementById('tpms-button');
+    const tpmsConfigModal = document.getElementById('tpms-config-modal');
+    const tpmsConfigForm = document.getElementById('tpms-config-form');
+    const cancelTpmsConfig = document.getElementById('cancel-tpms-config');
+    const tpmsConfigError = document.getElementById('tpms-config-error');
+    const tireCountInput = document.getElementById('tire-total-count');
+    const tireConfigInput = document.getElementById('tire-config-input');
 
     let byteInputs = [];
 
@@ -114,6 +120,70 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
         }
     }
+
+    // TPMS Button Handler
+    tpmsButton.addEventListener('click', () => {
+        tpmsConfigModal.classList.add('active');
+        tpmsConfigError.style.display = 'none';
+        tireCountInput.focus();
+    });
+
+    cancelTpmsConfig.addEventListener('click', (e) => {
+        e.preventDefault();
+        tpmsConfigModal.classList.remove('active');
+    });
+
+    tpmsConfigForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        validateAndLoadTPMS();
+    });
+
+    function validateAndLoadTPMS() {
+        const totalCount = parseInt(tireCountInput.value, 10);
+        const configStr = tireConfigInput.value.trim();
+        
+        if (isNaN(totalCount) || totalCount < 1) {
+            showTPMSError('Please enter a valid total tire count');
+            return;
+        }
+
+        const axleConfig = configStr.split(',').map(s => {
+            const num = parseInt(s.trim(), 10);
+            return isNaN(num) ? 0 : num;
+        });
+
+        if (axleConfig.length === 0 || axleConfig.some(n => n <= 0)) {
+            showTPMSError('Please enter valid axle configuration (e.g., 2,4)');
+            return;
+        }
+
+        const configTotal = axleConfig.reduce((sum, n) => sum + n, 0);
+        if (configTotal !== totalCount) {
+            showTPMSError(`Total tires (${configTotal}) must match the total count (${totalCount})`);
+            return;
+        }
+
+        // Save config to sessionStorage and navigate
+        sessionStorage.setItem('tpmsConfig', JSON.stringify({
+            totalTires: totalCount,
+            axleConfig: axleConfig,
+            configStr: configStr
+        }));
+        
+        window.location.href = 'tpms.html';
+    }
+
+    function showTPMSError(message) {
+        tpmsConfigError.textContent = message;
+        tpmsConfigError.style.display = 'block';
+    }
+
+    // Close modal when clicking outside
+    tpmsConfigModal.addEventListener('click', (e) => {
+        if (e.target === tpmsConfigModal) {
+            tpmsConfigModal.classList.remove('active');
+        }
+    });
 
     populateSelect(channelSelect, CHANNEL_OPTIONS);
     populateSelect(baudrateSelect, BAUDRATE_OPTIONS);

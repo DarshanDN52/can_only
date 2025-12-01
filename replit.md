@@ -64,6 +64,15 @@ A web interface for PCAN-Basic CAN bus communication. This application provides 
 ```
 
 ## Recent Changes
+- **2024-12-01**: TPMS Configuration Modal & Streamlined Dashboard
+  - Added tire configuration modal on TPMS DATA button click
+  - Modal asks for total tire count and axle configuration (e.g., 2,4)
+  - Validates total matches axle config sum before loading dashboard
+  - Removed "Start Data Collection" and "Stop Collection" buttons from TPMS dashboard
+  - TPMS dashboard now shows only "Back to Main" button
+  - Dashboard auto-starts with validated tire configuration immediately
+  - Tire config passed via sessionStorage from main console to dashboard
+
 - **2024-12-01**: Battery SI Unit Standardization (Final)
   - Updated all frontend battery display to use Watts (W) consistently
   - Main console: Displays battery in W from backend sensor data

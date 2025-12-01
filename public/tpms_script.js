@@ -85,51 +85,31 @@ function stopSimulationLoop() {
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Check for config in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const configParam = urlParams.get("config");
-    let autoStart = true; // Auto-start with dummy data by default
+    // Check for config in sessionStorage from main console
+    const configStr = sessionStorage.getItem('tpmsConfig');
+    let autoStart = true;
 
-    if (configParam) {
-        const axleStrings = configParam
-            .split(",")
-            .filter((s) => s.trim() !== "");
-        const newAxleConfig = axleStrings
-            .map((s) => parseInt(s.trim()))
-            .filter((n) => !isNaN(n) && n > 0 && n % 2 === 0);
-
-        if (
-            newAxleConfig.length > 0 &&
-            newAxleConfig.length === axleStrings.length
-        ) {
-            const totalTires = newAxleConfig.reduce(
-                (sum, count) => sum + count,
-                0,
-            );
-            if (totalTires >= 2 && totalTires <= 16) {
-                axleConfig = newAxleConfig;
-                tireCount = totalTires;
-            }
+    if (configStr) {
+        try {
+            const config = JSON.parse(configStr);
+            axleConfig = config.axleConfig;
+            tireCount = config.totalTires;
+            sessionStorage.removeItem('tpmsConfig'); // Clear after reading
+        } catch (e) {
+            console.error('Failed to parse TPMS config:', e);
         }
     }
 
-    initializeModal();
     initializeButtons();
     initializeChart();
     initializeTireDetailModal();
     initializeTireDetailChart();
     setupSocketListeners();
 
-    // Auto-start with dummy data for testing
+    // Auto-start with dummy data
     if (autoStart) {
-        // Hide the modal since we're auto-starting
-        const modal = document.getElementById("tire-count-modal");
-        if (modal) modal.style.display = "none";
-
-        // Defer start to ensure everything is rendered
         setTimeout(() => {
             startTPMSCollection();
-            // Generate some initial historical data for charts
             generateInitialDummyData();
         }, 100);
     }
@@ -179,73 +159,8 @@ function generateInitialDummyData() {
     updateChart(graphType);
 }
 
-// Modal handling
-function initializeModal() {
-    const modal = document.getElementById("tire-count-modal");
-    const closeBtn = document.querySelector(".close");
-    const confirmBtn = document.getElementById("confirm-tire-count");
-    const cancelBtn = document.getElementById("cancel-tire-count");
-
-    // Show modal on start button click
-    document.getElementById("start-tpms").addEventListener("click", () => {
-        modal.style.display = "block";
-    });
-
-    closeBtn.onclick = () => {
-        modal.style.display = "none";
-    };
-
-    cancelBtn.onclick = () => {
-        modal.style.display = "none";
-    };
-
-    confirmBtn.onclick = () => {
-        const configInput = document.getElementById("tire-config-input").value;
-        const axleStrings = configInput
-            .split(",")
-            .filter((s) => s.trim() !== "");
-        const newAxleConfig = axleStrings
-            .map((s) => parseInt(s.trim()))
-            .filter((n) => !isNaN(n) && n > 0 && n % 2 === 0);
-
-        if (
-            newAxleConfig.length === 0 ||
-            newAxleConfig.length !== axleStrings.length
-        ) {
-            alert(
-                "Please enter a valid axle configuration. Each axle must have an even number of tires (e.g., 2, 4).",
-            );
-            return;
-        }
-
-        axleConfig = newAxleConfig;
-        tireCount = axleConfig.reduce((sum, count) => sum + count, 0);
-
-        if (tireCount < 2) {
-            alert("Total number of tires must be at least 2.");
-            return;
-        }
-        if (tireCount > 16) {
-            alert("Total number of tires cannot exceed 16.");
-            return;
-        }
-
-        modal.style.display = "none";
-        startTPMSCollection();
-    };
-
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
-}
-
 // Button handlers
 function initializeButtons() {
-    document
-        .getElementById("stop-tpms")
-        .addEventListener("click", stopTPMSCollection);
     document.getElementById("back-to-main").addEventListener("click", () => {
         window.location.href = "/";
     });
