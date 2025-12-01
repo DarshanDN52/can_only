@@ -2,10 +2,12 @@
 const express = require('express');
 const path = require('path');
 const axios = require('axios');
+const fs = require('fs');
 
 const app = express();
 const port = 5000;
 const pythonApiUrl = 'http://localhost:5001/api';
+const dataFilePath = path.join(__dirname, 'data.json');
 
 // Disable caching for development
 app.use((req, res, next) => {
@@ -77,6 +79,32 @@ app.post('/api/tpms/start', async (req, res) => {
 
 app.post('/api/tpms/stop', async (req, res) => {
     await proxyRequest(req, res, 'post', '/tpms/stop', req.body);
+});
+
+// --- Data Save Endpoint ---
+app.post('/api/save-data', async (req, res) => {
+    try {
+        const newMessages = req.body.messages || [];
+        
+        let existingData = { messages: [], savedAt: [] };
+        if (fs.existsSync(dataFilePath)) {
+            try {
+                const fileContent = fs.readFileSync(dataFilePath, 'utf8');
+                existingData = JSON.parse(fileContent);
+            } catch (e) {
+                existingData = { messages: [], savedAt: [] };
+            }
+        }
+        
+        existingData.messages = existingData.messages.concat(newMessages);
+        existingData.savedAt.push(new Date().toISOString());
+        
+        fs.writeFileSync(dataFilePath, JSON.stringify(existingData, null, 2));
+        
+        res.json({ success: true, message: `Saved ${newMessages.length} messages to data.json` });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // --- Fallback for other GET requests ---

@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         connected: false,
         readTimer: null,
         messageCounters: new Map(),
-        lastTimestamps: new Map()
+        lastTimestamps: new Map(),
+        messageBuffer: []
     };
 
     const channelSelect = document.getElementById('channel');
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializeBtn = document.getElementById('initialize-pcan');
     const releaseBtn = document.getElementById('release-pcan');
     const pollNowBtn = document.getElementById('poll-now');
+    const loadDataBtn = document.getElementById('load-data');
     const connectionPill = document.getElementById('connection-pill');
     const writeForm = document.getElementById('write-form');
     const writeId = document.getElementById('write-id');
@@ -125,10 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeBtn.addEventListener('click', initializeConnection);
     releaseBtn.addEventListener('click', releaseConnection);
     pollNowBtn.addEventListener('click', () => fetchMessage(true));
+    loadDataBtn.addEventListener('click', saveDataToFile);
     clearMessagesBtn.addEventListener('click', () => {
         messagesBody.innerHTML = '';
         state.messageCounters.clear();
         state.lastTimestamps.clear();
+        state.messageBuffer = [];
     });
     clearLogBtn.addEventListener('click', () => {
         logList.innerHTML = '';
@@ -158,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeBtn.disabled = connected;
         releaseBtn.disabled = !connected;
         pollNowBtn.disabled = !connected;
+        loadDataBtn.disabled = !connected;
         clearMessagesBtn.disabled = !connected;
         writeBtn.disabled = !connected;
 
@@ -172,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.messageCounters.clear();
             messagesBody.innerHTML = '';
             state.lastTimestamps.clear();
+            state.messageBuffer = [];
         }
     }
 
@@ -306,19 +312,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const cycleTime = prevTimestamp ? (currentTimestamp - prevTimestamp).toFixed(0) : '—';
         state.lastTimestamps.set(message.id, currentTimestamp);
 
+        const messageEntry = {
+            id: message.id,
+            count: count,
+            len: message.len,
+            cycleTime: cycleTime,
+            data: Array.isArray(message.data) ? message.data.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ') : '',
+            timestamp: new Date().toISOString()
+        };
+        state.messageBuffer.push(messageEntry);
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${message.id}</td>
             <td>${count}</td>
             <td>${message.len}</td>
             <td>${cycleTime}</td>
-            <td>${Array.isArray(message.data) ? message.data.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ') : ''}</td>
+            <td>${messageEntry.data}</td>
         `;
         messagesBody.prepend(row);
 
         const maxRows = 200;
         while (messagesBody.children.length > maxRows) {
             messagesBody.removeChild(messagesBody.lastChild);
+        }
+    }
+
+    async function saveDataToFile() {
+        if (state.messageBuffer.length === 0) {
+            pushLog('error', 'No data to save. Buffer is empty.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/save-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: state.messageBuffer })
+            });
+            const data = await response.json();
+            if (data.success) {
+                pushLog('success', `Data saved to data.json (${state.messageBuffer.length} messages)`);
+                state.messageBuffer = [];
+                messagesBody.innerHTML = '';
+                state.messageCounters.clear();
+                state.lastTimestamps.clear();
+            } else {
+                pushLog('error', data.error || 'Failed to save data.');
+            }
+        } catch (error) {
+            pushLog('error', `Error saving data: ${error.message}`);
         }
     }
 
