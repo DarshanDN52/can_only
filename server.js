@@ -4,7 +4,7 @@ const path = require('path');
 const axios = require('axios');
 
 const app = express();
-const port = 3000;
+const port = 5000;
 const pythonApiUrl = 'http://localhost:5001/api';
 
 // Serve static files from the 'public' directory
@@ -84,8 +84,8 @@ app.get('*', (req, res) => {
 });
 
 
-app.listen(port, () => {
-    console.log(`Node.js server listening at http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Node.js server listening at http://0.0.0.0:${port}`);
     console.log('This server acts as a proxy to the Python PCAN API server.');
     console.log('Make sure the Python server is running: python pcan_api_server.py');
 });
