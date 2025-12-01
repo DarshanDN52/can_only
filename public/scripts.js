@@ -259,19 +259,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.connected && !manual) return;
         try {
             const response = await fetch('/api/pcan/read');
-            const data = await response.json();
+            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error(data.error || 'Read call failed');
+                throw new Error(responseData.error || 'Read call failed');
             }
 
-            if (typeof data.message === 'string') {
+            // Handle new format with payload
+            let message = null;
+            if (responseData.message) {
+                message = responseData.message;
+            } else if (responseData.payload && responseData.payload.data && responseData.payload.data.message) {
+                message = responseData.payload.data.message;
+            }
+
+            if (!message || typeof message === 'string') {
                 return;
             }
 
-            const key = `${data.message.msg_type}-${data.message.id}`;
+            const key = `${message.msg_type}-${message.id}`;
             const nextCount = (state.messageCounters.get(key) ?? 0) + 1;
             state.messageCounters.set(key, nextCount);
-            renderMessageRow(data.message, nextCount);
+            renderMessageRow(message, nextCount);
         } catch (error) {
             if (manual) {
                 pushLog('error', `Unable to read frame: ${error.message}`);
@@ -330,12 +338,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const cycleTime = prevTimestamp ? (currentTimestamp - prevTimestamp).toFixed(0) : '—';
         state.lastTimestamps.set(message.id, currentTimestamp);
 
+        // Build data display with SI units if parsed data exists
+        let dataDisplay = '';
+        let parsedInfo = '';
+        
+        if (message.parsed) {
+            const p = message.parsed;
+            dataDisplay = `
+                Sensor ${p.sensor_id} | 
+                Pressure: ${p.pressure} | 
+                Temp: ${p.temperature}°C | 
+                Battery: ${p.battery_watts}W
+            `;
+            parsedInfo = {
+                sensor_id: p.sensor_id,
+                temperature: p.temperature,
+                battery_watts: p.battery_watts,
+                pressure: p.pressure
+            };
+        } else {
+            dataDisplay = Array.isArray(message.data) ? message.data.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ') : '';
+        }
+
         const messageEntry = {
             id: message.id,
             count: count,
             len: message.len,
             cycleTime: cycleTime,
-            data: Array.isArray(message.data) ? message.data.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ') : '',
+            data: dataDisplay,
+            parsed: parsedInfo,
             timestamp: new Date().toISOString()
         };
         
@@ -351,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${count}</td>
             <td>${message.len}</td>
             <td>${cycleTime}</td>
-            <td>${messageEntry.data}</td>
+            <td style="font-size: 12px; word-wrap: break-word;">${dataDisplay}</td>
         `;
         messagesBody.prepend(row);
 
