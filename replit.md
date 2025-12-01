@@ -64,6 +64,13 @@ A web interface for PCAN-Basic CAN bus communication. This application provides 
 ```
 
 ## Recent Changes
+- **2024-12-01**: Battery SI Unit Standardization
+  - Updated all frontend battery display to use milliwatts (mW) consistently
+  - Main console: Displays battery in mW converted from backend watts
+  - TPMS Dashboard: All battery readings show in mW (3000-5000 mW dummy range)
+  - Data view and graph axes: Battery shown in mW instead of percentage
+  - Updated status thresholds for battery in mW (critical <2500mW, warning <3000mW)
+
 - **2024-12-01**: Read Message improvements and data export
   - Added scrollable Read Message table with 300px max height
   - Added "Load Data" button to export CAN messages to data.json

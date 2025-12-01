@@ -60,7 +60,7 @@ function initializeTireData() {
             position: getTirePositionName(i),
             pressure: 35 + Math.random() * 10,
             temperature: 20 + Math.random() * 15,
-            battery: 2000 + Math.random() * 2000,
+            battery: 3000 + Math.random() * 2000,
             status: "normal",
             lastUpdate: new Date(),
         };
@@ -148,7 +148,7 @@ function generateInitialDummyData() {
         for (let i = 1; i <= tireCount; i++) {
             const basePressure = 35 + (i % 3) * 5;
             const baseTemp = 20 + (i % 2) * 5;
-            const baseBattery = 60 + (i % 4) * 5;
+            const baseBattery = 3500 + (i % 4) * 500;
 
             addToHistory(
                 "pressure",
@@ -166,8 +166,8 @@ function generateInitialDummyData() {
                 "battery",
                 i,
                 Math.max(
-                    0,
-                    Math.min(100, baseBattery + (Math.random() - 0.5) * 20),
+                    2000,
+                    Math.min(5000, baseBattery + (Math.random() - 0.5) * 1000),
                 ),
                 timeLabel,
             );
@@ -332,7 +332,7 @@ function initializeTireDetailChart() {
                     pointHoverRadius: 5,
                 },
                 {
-                    label: "Battery (%)",
+                    label: "Battery (mW)",
                     data: [],
                     borderColor: "#2196f3",
                     backgroundColor: "rgba(33, 150, 243, 0.1)",
@@ -595,7 +595,7 @@ function updateTireDetailView(viewType) {
     } else if (viewType === "battery") {
         scales["y-pressure"].display = false;
         scales["y-temperature"].display = true;
-        scales["y-temperature"].title.text = "Battery (%)";
+        scales["y-temperature"].title.text = "Battery (mW)";
     }
 
     tireDetailChart.update();
@@ -785,14 +785,14 @@ function calculateStatus(tire) {
         tire.pressure < 20 ||
         tire.pressure > 120 ||
         tire.temperature > 80 ||
-        tire.battery < 20
+        tire.battery < 2500
     ) {
         return "critical";
     } else if (
         tire.pressure < 30 ||
         tire.pressure > 100 ||
         tire.temperature > 60 ||
-        tire.battery < 40
+        tire.battery < 3000
     ) {
         return "warning";
     }
@@ -987,7 +987,7 @@ function renderDataView() {
                 </div>
                 <div class="detail-item">
                     <span>Battery:</span>
-                    <span id="data-box-battery-${i}">${tire.battery.toFixed(0)}%</span>
+                    <span id="data-box-battery-${i}">${tire.battery.toFixed(0)} mW</span>
                 </div>
             </div>
         `;
@@ -1008,7 +1008,7 @@ function updateDataBox(tireNum) {
     document.getElementById(`data-box-temperature-${tireNum}`).textContent =
         `${tire.temperature.toFixed(1)} °C`;
     document.getElementById(`data-box-battery-${tireNum}`).textContent =
-        `${tire.battery.toFixed(0)}%`;
+        `${tire.battery.toFixed(0)} mW`;
 }
 
 // Calculate tire positions for 2D top view - arranged around truck rectangle
@@ -1080,7 +1080,7 @@ function updateTireDisplay(tireNum) {
         tempEl.innerHTML = `<span class="metric-label">T:</span>${tire.temperature.toFixed(1)}°C`;
     }
     if (batteryEl) {
-        batteryEl.innerHTML = `<span class="metric-label">B:</span>${tire.battery.toFixed(0)}%`;
+        batteryEl.innerHTML = `<span class="metric-label">B:</span>${tire.battery.toFixed(0)} mW`;
     }
 }
 
@@ -1105,7 +1105,7 @@ function renderTable() {
             <td><strong>${tire.position}</strong></td>
             <td>${tire.pressure.toFixed(1)}</td>
             <td>${tire.temperature.toFixed(1)}</td>
-            <td>${tire.battery.toFixed(0)}%</td>
+            <td>${tire.battery.toFixed(0)} mW</td>
             <td>${tire.lastUpdate.toLocaleTimeString()}</td>
         `;
         tbody.appendChild(row);
@@ -1124,7 +1124,7 @@ function updateTableRow(tireNum) {
             <td><strong>${tire.position}</strong></td>
             <td>${tire.pressure.toFixed(1)}</td>
             <td>${tire.temperature.toFixed(1)}</td>
-            <td>${tire.battery.toFixed(0)}%</td>
+            <td>${tire.battery.toFixed(0)} mW</td>
             <td>${tire.lastUpdate.toLocaleTimeString()}</td>
         `;
     }
@@ -1173,7 +1173,7 @@ function updateChart(metricType) {
     const titles = {
         pressure: "Pressure (PSI)",
         temperature: "Temperature (°C)",
-        battery: "Battery Level (%)",
+        battery: "Battery Level (mW)",
     };
 
     chart.options.plugins.title.text = `TPMS ${titles[metricType]} Over Time`;
@@ -1205,14 +1205,14 @@ function simulateTPMSData() {
         // Simulate realistic variations
         const basePressure = 35 + (i % 3) * 5;
         const baseTemp = 20 + (i % 2) * 5;
-        const baseBattery = 60 + (i % 4) * 5;
+        const baseBattery = 3500 + (i % 4) * 500;
 
         const data = {
             pressure: basePressure + (Math.random() - 0.5) * 8,
             temperature: baseTemp + (Math.random() - 0.5) * 10,
             battery: Math.max(
-                0,
-                Math.min(100, baseBattery + (Math.random() - 0.5) * 20),
+                2000,
+                Math.min(5000, baseBattery + (Math.random() - 0.5) * 1000),
             ),
         };
         updateTireData(i, data);
