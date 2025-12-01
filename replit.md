@@ -64,6 +64,12 @@ A web interface for PCAN-Basic CAN bus communication. This application provides 
 ```
 
 ## Recent Changes
+- **2024-12-01**: Read Message improvements and data export
+  - Added scrollable Read Message table with 300px max height
+  - Added "Load Data" button to export CAN messages to data.json
+  - Buffer automatically resets after saving to prevent duplicate data
+  - Disabled TPMS graph legend click interactions to keep all data visible
+
 - **2024-12-01**: Theme and TPMS Dashboard improvements
   - Unified dark theme across main console and TPMS dashboard
   - Added matching blue accent colors and styling
