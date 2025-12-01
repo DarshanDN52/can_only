@@ -28,6 +28,8 @@ const MESSAGE_FLAGS = {
     STATUS: 0x80
 };
 
+const MAX_BUFFER_SIZE = 1000;
+
 document.addEventListener('DOMContentLoaded', () => {
     const state = {
         connected: false,
@@ -336,6 +338,11 @@ document.addEventListener('DOMContentLoaded', () => {
             data: Array.isArray(message.data) ? message.data.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ') : '',
             timestamp: new Date().toISOString()
         };
+        
+        // Circular buffer: if at max size, remove oldest message first
+        if (state.messageBuffer.length >= MAX_BUFFER_SIZE) {
+            state.messageBuffer.shift();
+        }
         state.messageBuffer.push(messageEntry);
 
         const row = document.createElement('tr');
