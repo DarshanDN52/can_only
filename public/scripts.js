@@ -344,12 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (message.parsed) {
             const p = message.parsed;
-            dataDisplay = `
-                Sensor ${p.sensor_id} | 
-                Pressure: ${p.pressure} | 
-                Temp: ${p.temperature}°C | 
-                Battery: ${p.battery_watts}W
-            `;
+            dataDisplay = `Sensor ${p.sensor_id} | Pressure: ${p.pressure} | Temp: ${p.temperature}°C | Battery: ${p.battery_watts} Watts`;
             parsedInfo = {
                 sensor_id: p.sensor_id,
                 temperature: p.temperature,
