@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeTireDetailModal();
     initializeTireDetailChart();
     setupSocketListeners();
+    initializeTireData();
 
     // Auto-start with dummy data
     if (autoStart) {
@@ -663,10 +664,6 @@ function setupSocketListeners() {
 // Start TPMS data collection
 function startTPMSCollection() {
     isCollecting = true;
-    document.getElementById("start-tpms").disabled = true;
-    document.getElementById("stop-tpms").disabled = false;
-
-    initializeTireData();
     renderTruckView();
     renderTable();
     renderDataView();
@@ -676,8 +673,6 @@ function startTPMSCollection() {
 // Stop TPMS data collection
 function stopTPMSCollection() {
     isCollecting = false;
-    document.getElementById("start-tpms").disabled = false;
-    document.getElementById("stop-tpms").disabled = true;
     stopSimulationLoop();
 }
 
