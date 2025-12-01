@@ -64,6 +64,13 @@ A web interface for PCAN-Basic CAN bus communication. This application provides 
 ```
 
 ## Recent Changes
+- **2024-12-01**: Theme and TPMS Dashboard improvements
+  - Unified dark theme across main console and TPMS dashboard
+  - Added matching blue accent colors and styling
+  - TPMS dashboard now auto-loads with dummy data for testing
+  - Added getTirePositionName function for proper tire position labels
+  - Added cache control headers to prevent stale assets
+
 - **2024-12-01**: Initial Replit environment setup
   - Updated Node.js server to use port 5000 and bind to 0.0.0.0
   - Installed Python 3.11 and Flask dependencies
