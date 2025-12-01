@@ -195,16 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initializeConnection() {
-        const payload = {
-            channel: channelSelect.value,
-            baudrate: baudrateSelect.value
+        const jsonPayload = {
+            command: 'INIT_PCAN',
+            payload: {
+                id: channelSelect.value,
+                bit_rate: baudrateSelect.value,
+                data: ''
+            }
         };
 
         try {
             const response = await fetch('/api/pcan/initialize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
             if (data.success) {
@@ -222,10 +226,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function releaseConnection() {
+        const jsonPayload = {
+            command: 'UNINIT_PCAN',
+            payload: {
+                id: '',
+                bit_rate: '',
+                data: ''
+            }
+        };
+
         try {
             const response = await fetch('/api/pcan/release', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
             if (data.success) {
@@ -283,18 +297,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const payload = {
-            id: id.toUpperCase(),
-            data: bytes.map(byte => parseInt(byte, 16)),
-            extended: false,
-            rtr: false
+        const jsonPayload = {
+            command: 'SEND_DATA',
+            payload: {
+                id: id.toUpperCase(),
+                bit_rate: baudrateSelect.value,
+                data: bytes.map(byte => parseInt(byte, 16))
+            }
         };
 
         try {
             const response = await fetch('/api/pcan/write', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
             if (!(response.ok && data.success)) {
@@ -344,11 +360,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const jsonPayload = {
+            command: 'LOAD_DATA',
+            payload: {
+                id: '',
+                bit_rate: '',
+                data: state.messageBuffer
+            }
+        };
+
         try {
             const response = await fetch('/api/save-data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: state.messageBuffer })
+                body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
             if (data.success) {

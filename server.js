@@ -47,14 +47,27 @@ async function proxyRequest(req, res, method, endpoint, data = null) {
     }
 }
 
+// Helper to extract payload from new JSON format
+function extractPayload(body) {
+    if (body && body.command && body.payload) {
+        return body.payload;
+    }
+    return body;
+}
+
 // Initialize PCAN
 app.post('/api/pcan/initialize', async (req, res) => {
-    await proxyRequest(req, res, 'post', '/init', req.body);
+    const payload = extractPayload(req.body);
+    const backendPayload = {
+        channel: payload.id,
+        baudrate: payload.bit_rate
+    };
+    await proxyRequest(req, res, 'post', '/init', backendPayload);
 });
 
 // Release PCAN
 app.post('/api/pcan/release', async (req, res) => {
-    await proxyRequest(req, res, 'post', '/release');
+    await proxyRequest(req, res, 'post', '/release', {});
 });
 
 // Read messages
@@ -64,7 +77,14 @@ app.get('/api/pcan/read', async (req, res) => {
 
 // Write message
 app.post('/api/pcan/write', async (req, res) => {
-    await proxyRequest(req, res, 'post', '/write', req.body);
+    const payload = extractPayload(req.body);
+    const backendPayload = {
+        id: payload.id,
+        data: payload.data,
+        extended: false,
+        rtr: false
+    };
+    await proxyRequest(req, res, 'post', '/write', backendPayload);
 });
 
 // Get status
@@ -84,7 +104,8 @@ app.post('/api/tpms/stop', async (req, res) => {
 // --- Data Save Endpoint ---
 app.post('/api/save-data', async (req, res) => {
     try {
-        const newMessages = req.body.messages || [];
+        const payload = extractPayload(req.body);
+        const newMessages = payload.data || [];
         
         let existingData = { messages: [], savedAt: [] };
         if (fs.existsSync(dataFilePath)) {
