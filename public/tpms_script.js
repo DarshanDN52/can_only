@@ -60,7 +60,7 @@ function initializeTireData() {
             position: getTirePositionName(i),
             pressure: 35 + Math.random() * 10,
             temperature: 20 + Math.random() * 15,
-            battery: 60 + Math.random() * 30,
+            battery: 2000 + Math.random() * 2000,
             status: "normal",
             lastUpdate: new Date(),
         };
