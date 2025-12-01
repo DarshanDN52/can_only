@@ -132,6 +132,44 @@ def get_status():
         "status_text": get_error_text(status)
         })
 
+def parse_sensor_data(data_bytes):
+    """
+    Parses 8-byte sensor data (TPMS format).
+    Byte 0: Sensor ID (tire)
+    Byte 1: Packet type
+    Bytes 2-3: Pressure (decimal value)
+    Bytes 4-5: Temperature (arrange as byte[5] then byte[4], then (value - 8500) / 100)
+    Byte 6: Battery (decimal value * 10 + 2000 = mW, convert to Watts / 1000)
+    """
+    try:
+        if len(data_bytes) < 7:
+            return None
+        
+        sensor_id = data_bytes[0]
+        packet_type = data_bytes[1]
+        
+        # Pressure (bytes 2-3)
+        pressure = (data_bytes[2] << 8) | data_bytes[3]
+        
+        # Temperature (bytes 4-5, arrange as 5th then 4th)
+        temp_raw = (data_bytes[5] << 8) | data_bytes[4]
+        temperature = (temp_raw - 8500) / 100.0
+        
+        # Battery (byte 6, formula: value * 10 + 2000 = mW, then convert to watts)
+        battery_mw = (data_bytes[6] * 10) + 2000
+        battery_watts = battery_mw / 1000.0
+        
+        return {
+            "sensor_id": sensor_id,
+            "packet_type": packet_type,
+            "pressure": pressure,
+            "temperature": round(temperature, 2),
+            "battery_watts": round(battery_watts, 2)
+        }
+    except Exception as e:
+        print(f"Error parsing sensor data: {e}")
+        return None
+
 @app.route('/api/read', methods=['GET'])
 def read_message():
     """Reads a CAN message from the receive queue."""
@@ -150,12 +188,22 @@ def read_message():
     can_msg = result_tuple[1]
     timestamp = result_tuple[2]
 
+    # Extract raw data bytes
+    data_len = can_msg.LEN if not IS_FD else can_msg.DLC
+    data_bytes = [can_msg.DATA[i] for i in range(data_len)]
+
+    # Parse sensor data if 8 bytes
+    parsed_data = None
+    if data_len >= 7:
+        parsed_data = parse_sensor_data(data_bytes)
+
     # Convert ctypes object to a dictionary for JSON serialization
     msg_data = {
         "id": f"{can_msg.ID:X}",
         "msg_type": can_msg.MSGTYPE,
-        "len": can_msg.LEN if not IS_FD else can_msg.DLC,
-        "data": [can_msg.DATA[i] for i in range(can_msg.LEN if not IS_FD else can_msg.DLC)],
+        "len": data_len,
+        "data": data_bytes,
+        "parsed": parsed_data  # Include parsed sensor data
     }
     
     # Handle timestamp for both standard and FD
