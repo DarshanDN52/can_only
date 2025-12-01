@@ -24,25 +24,56 @@ app.use(express.json());
 // --- API Endpoints (Proxy to Python Server) ---
 
 // Helper function to proxy requests and handle errors
-async function proxyRequest(req, res, method, endpoint, data = null) {
+async function proxyRequest(req, res, method, endpoint, data = null, commandType = null) {
     try {
         const response = await axios({
             method: method,
             url: `${pythonApiUrl}${endpoint}`,
             data: data
         });
-        res.status(response.status).json(response.data);
-    } catch (error) {
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            res.status(error.response.status).json(error.response.data);
-        } else if (error.request) {
-            // The request was made but no response was received
-            res.status(503).json({ success: false, error: 'The Python API server is not running or not reachable.' });
+        
+        if (commandType) {
+            const payload = response.data;
+            res.status(response.status).json({
+                command: commandType,
+                payload: {
+                    status: payload.success ? 'ok' : 'error',
+                    data: payload.message || payload.error || '',
+                    packet_status: payload.success ? 'success' : 'failed'
+                }
+            });
         } else {
-            // Something happened in setting up the request that triggered an Error
-            res.status(500).json({ success: false, error: 'Internal server error while proxying the request.' });
+            res.status(response.status).json(response.data);
+        }
+    } catch (error) {
+        const errorCommand = commandType || 'ERROR';
+        if (error.response) {
+            res.status(error.response.status).json({
+                command: errorCommand,
+                payload: {
+                    status: 'error',
+                    data: error.response.data.error || 'Request failed',
+                    packet_status: 'failed'
+                }
+            });
+        } else if (error.request) {
+            res.status(503).json({
+                command: errorCommand,
+                payload: {
+                    status: 'error',
+                    data: 'The Python API server is not running or not reachable.',
+                    packet_status: 'failed'
+                }
+            });
+        } else {
+            res.status(500).json({
+                command: errorCommand,
+                payload: {
+                    status: 'error',
+                    data: 'Internal server error while proxying the request.',
+                    packet_status: 'failed'
+                }
+            });
         }
     }
 }
@@ -62,17 +93,17 @@ app.post('/api/pcan/initialize', async (req, res) => {
         channel: payload.id,
         baudrate: payload.bit_rate
     };
-    await proxyRequest(req, res, 'post', '/init', backendPayload);
+    await proxyRequest(req, res, 'post', '/init', backendPayload, 'PCAN_INIT_RESULT');
 });
 
 // Release PCAN
 app.post('/api/pcan/release', async (req, res) => {
-    await proxyRequest(req, res, 'post', '/release', {});
+    await proxyRequest(req, res, 'post', '/release', {}, 'PCAN_UNINIT_RESULT');
 });
 
 // Read messages
 app.get('/api/pcan/read', async (req, res) => {
-    await proxyRequest(req, res, 'get', '/read');
+    await proxyRequest(req, res, 'get', '/read', null, 'DATA');
 });
 
 // Write message
@@ -84,7 +115,7 @@ app.post('/api/pcan/write', async (req, res) => {
         extended: false,
         rtr: false
     };
-    await proxyRequest(req, res, 'post', '/write', backendPayload);
+    await proxyRequest(req, res, 'post', '/write', backendPayload, 'DATA');
 });
 
 // Get status
@@ -122,9 +153,23 @@ app.post('/api/save-data', async (req, res) => {
         
         fs.writeFileSync(dataFilePath, JSON.stringify(existingData, null, 2));
         
-        res.json({ success: true, message: `Saved ${newMessages.length} messages to data.json` });
+        res.json({
+            command: 'LOAD_DATA',
+            payload: {
+                status: 'ok',
+                data: `Saved ${newMessages.length} messages to data.json`,
+                packet_status: 'success'
+            }
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            command: 'LOAD_DATA',
+            payload: {
+                status: 'error',
+                data: error.message,
+                packet_status: 'failed'
+            }
+        });
     }
 });
 

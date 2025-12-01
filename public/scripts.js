@@ -213,14 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
-            if (data.success) {
-                pushLog('success', data.message || 'PCAN initialized.');
+            if (data.payload.packet_status === 'success') {
+                pushLog('success', data.payload.data || 'PCAN initialized.');
                 state.messageCounters.clear();
                 state.lastTimestamps.clear();
                 messagesBody.innerHTML = '';
                 toggleConnected(true);
             } else {
-                pushLog('error', data.error || 'Failed to initialize PCAN.');
+                pushLog('error', data.payload.data || 'Failed to initialize PCAN.');
             }
         } catch (error) {
             pushLog('error', `Network error initializing PCAN: ${error.message}`);
@@ -244,11 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
-            if (data.success) {
-                pushLog('success', data.message || 'PCAN released.');
+            if (data.payload.packet_status === 'success') {
+                pushLog('success', data.payload.data || 'PCAN released.');
                 toggleConnected(false);
             } else {
-                pushLog('error', data.error || 'Failed to release PCAN.');
+                pushLog('error', data.payload.data || 'Failed to release PCAN.');
             }
         } catch (error) {
             pushLog('error', `Network error releasing PCAN: ${error.message}`);
@@ -315,10 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
-            if (!(response.ok && data.success)) {
-                throw new Error(data.error || 'Send failed');
+            if (data.payload.packet_status !== 'success') {
+                throw new Error(data.payload.data || 'Send failed');
             }
-            pushLog('success', data.message || 'Frame sent successfully.');
+            pushLog('success', data.payload.data || 'Frame sent successfully.');
         } catch (error) {
             pushLog('error', `Unable to send frame: ${error.message}`);
         }
@@ -383,14 +383,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(jsonPayload)
             });
             const data = await response.json();
-            if (data.success) {
-                pushLog('success', `Data saved to data.json (${state.messageBuffer.length} messages)`);
+            if (data.command === 'LOAD_DATA' && data.payload.packet_status === 'success') {
+                pushLog('success', data.payload.data || 'Data saved successfully');
                 state.messageBuffer = [];
                 messagesBody.innerHTML = '';
                 state.messageCounters.clear();
                 state.lastTimestamps.clear();
             } else {
-                pushLog('error', data.error || 'Failed to save data.');
+                pushLog('error', data.payload.data || 'Failed to save data.');
             }
         } catch (error) {
             pushLog('error', `Error saving data: ${error.message}`);
