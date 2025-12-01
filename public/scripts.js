@@ -223,12 +223,6 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.sendBeacon('/api/pcan/release', blob);
     });
 
-    if (tpmsButton) {
-        tpmsButton.addEventListener('click', () => {
-            window.location.href = 'tpms.html';
-        });
-    }
-
     function toggleConnected(connected) {
         state.connected = connected;
         initializeBtn.disabled = connected;
