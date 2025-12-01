@@ -312,7 +312,8 @@ function initializeTireDetailChart() {
                         font: {
                             size: 12
                         }
-                    }
+                    },
+                    onClick: null
                 },
                 tooltip: {
                     mode: 'index',
@@ -575,7 +576,8 @@ function initializeChart() {
                         font: {
                             size: 12
                         }
-                    }
+                    },
+                    onClick: null
                 },
                 tooltip: {
                     mode: 'index',
